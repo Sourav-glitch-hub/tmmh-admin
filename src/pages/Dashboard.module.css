@@ -1,0 +1,61 @@
+/* Dashboard.module.css */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+.statIcon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon_blue   { background: var(--blue-light);   color: var(--blue);   }
+.icon_green  { background: var(--green-light);  color: var(--green);  }
+.icon_amber  { background: var(--amber-light);  color: var(--amber);  }
+.icon_orange { background: var(--orange-light); color: var(--orange); }
+
+.statVal {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 800;
+  color: var(--navy); line-height: 1;
+}
+.statLabel { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+/* Breakdown card */
+.breakdownCard { margin-bottom: 20px; }
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700; color: var(--navy);
+  margin-bottom: 16px;
+}
+.breakdownGrid { display: flex; flex-direction: column; gap: 10px; }
+.breakdownItem { display: flex; align-items: center; gap: 12px; }
+.breakdownLabel { font-size: 13px; color: var(--slate); width: 100px; flex-shrink: 0; text-transform: capitalize; }
+.breakdownBarWrap { flex: 1; height: 8px; background: var(--bg-soft); border-radius: 99px; overflow: hidden; }
+.breakdownBar { height: 100%; background: var(--blue); border-radius: 99px; transition: width .6s ease; min-width: 4px; }
+.breakdownCount { font-size: 13px; font-weight: 700; color: var(--navy); width: 28px; text-align: right; }
+
+/* Recent repairs */
+.recentHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.idLink       { color: var(--blue); font-weight: 700; font-family: var(--font-display); }
+.idLink:hover { text-decoration: underline; }
+.empty        { text-align: center; padding: 48px; color: var(--subtle); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+@media (max-width: 900px) {
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .statsGrid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .statVal   { font-size: 24px; }
+}

@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import ConfirmModal from '../components/ConfirmModal.jsx'
 import styles from './Products.module.css'
 
-const CATEGORIES = ['cover', 'charger', 'powerbank', 'earphone', 'tempered glass' , ]
+const CATEGORIES = ['cover', 'charger', 'powerbank', 'earphone', 'tempered glass']
 
 const CAT_ICONS = {
   cover:           <Package size={28}/>,
@@ -18,7 +18,6 @@ const CAT_ICONS = {
   powerbank:       <Battery size={28}/>,
   earphone:        <Volume2 size={28}/>,
   'tempered glass':<Shield  size={28}/>,
-//   other:            <MoreHorizontal size={36} />,
 }
 
 const CAT_COLORS = {
@@ -27,7 +26,6 @@ const CAT_COLORS = {
   powerbank:       '#F0FDF4',
   earphone:        '#FDF4FF',
   'tempered glass':'#F0F9FF',
-  other:            { bg: '#F3F4F6', icon: '#374151' },
 }
 
 const BLANK = { name: '', category: '', description: '', available: true }
@@ -42,6 +40,8 @@ export default function Products() {
   const [form,      setForm]       = useState(BLANK)
   const [formErr,   setFormErr]    = useState({})
   const [image,     setImage]      = useState(null)
+  const [imageUrl,  setImageUrl]   = useState('')
+  const [imgTab,    setImgTab]     = useState('url') // 'url' | 'file'
   const [saving,    setSaving]     = useState(false)
   const [deleteId,  setDeleteId]   = useState(null)
   const [deleting,  setDeleting]   = useState(false)
@@ -62,9 +62,9 @@ export default function Products() {
 
   useEffect(() => { load() }, [])
 
-  const openAdd  = () => { setEditing(null); setForm(BLANK); setImage(null); setFormErr({}); setModalOpen(true) }
-  const openEdit = (p) => { setEditing(p); setForm({ name: p.name, category: p.category, description: p.description, available: p.available }); setImage(null); setFormErr({}); setModalOpen(true) }
-  const closeModal = () => { setModalOpen(false); setEditing(null); setForm(BLANK); setImage(null); setFormErr({}) }
+  const openAdd  = () => { setEditing(null); setForm(BLANK); setImage(null); setImageUrl(''); setImgTab('url'); setFormErr({}); setModalOpen(true) }
+  const openEdit = (p) => { setEditing(p); setForm({ name: p.name, category: p.category, description: p.description, available: p.available }); setImage(null); setImageUrl(p.image && p.image.startsWith('http') ? p.image : ''); setImgTab('url'); setFormErr({}); setModalOpen(true) }
+  const closeModal = () => { setModalOpen(false); setEditing(null); setForm(BLANK); setImage(null); setImageUrl(''); setImgTab('url'); setFormErr({}) }
 
   const set = (k, v) => { setForm(f => ({ ...f, [k]: v })); setFormErr(e => ({ ...e, [k]: '' })) }
 
@@ -88,6 +88,8 @@ export default function Products() {
       fd.append('description', form.description)
       fd.append('available',   form.available)
       if (image) fd.append('image', image)
+      // If URL provided and no file selected, send URL as imageUrl
+      if (!image && imageUrl.trim()) fd.append('imageUrl', imageUrl.trim())
 
       if (editing) {
         await productAPI.update(editing._id, fd, token)
@@ -179,7 +181,7 @@ export default function Products() {
               {/* Image area */}
               <div className={styles.prodImg} style={{ background: CAT_COLORS[p.category] || '#F8FAFC' }}>
                 {p.image
-                  ? <img src={`http://localhost:5000${p.image}`} alt={p.name}/>
+                  ? <img src={p.image?.startsWith('http') ? p.image : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${p.image}`} alt={p.name}/>
                   : <div style={{ color: '#94A3B8', opacity: .5 }}>{CAT_ICONS[p.category] || <Package size={28}/>}</div>
                 }
                 <span className={`badge ${p.available ? 'badge-green' : 'badge-gray'} ${styles.availBadge}`}>
@@ -296,27 +298,80 @@ export default function Products() {
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">
-                  Product Image {editing && <span style={{ color: 'var(--subtle)', textTransform: 'none', fontSize: 11, fontWeight: 400 }}>(leave blank to keep existing)</span>}
-                </label>
-                <div
-                  className={styles.uploadZone}
-                  onClick={() => fileRef.current?.click()}
-                >
-                  <input ref={fileRef} type="file" accept="image/*" hidden onChange={e => handleFile(e.target.files[0])}/>
-                  <Upload size={20} style={{ color: 'var(--blue-mid)', marginBottom: 6 }}/>
-                  <p style={{ fontSize: 13, color: 'var(--muted)' }}>
-                    {image ? image.name : 'Click to upload image'}
-                  </p>
-                  <p style={{ fontSize: 11, color: 'var(--subtle)' }}>JPG, PNG, WebP · Max 5 MB</p>
+                <label className="form-label">Product Image</label>
+
+                {/* Tab switcher */}
+                <div style={{ display:'flex', gap:8, marginBottom:12 }}>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${imgTab==='url' ? 'btn-primary' : 'btn-ghost'}`}
+                    onClick={() => { setImgTab('url'); setImage(null) }}
+                  >
+                    🔗 Image URL
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${imgTab==='file' ? 'btn-primary' : 'btn-ghost'}`}
+                    onClick={() => { setImgTab('file'); setImageUrl('') }}
+                  >
+                    📁 Upload File
+                  </button>
                 </div>
-                {image && (
-                  <div className={styles.imgPreview}>
-                    <img src={URL.createObjectURL(image)} alt="preview"/>
-                    <button onClick={() => setImage(null)} style={{ background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer' }}>
-                      <X size={14}/>
-                    </button>
+
+                {/* URL input tab */}
+                {imgTab === 'url' && (
+                  <div>
+                    <input
+                      className="form-input"
+                      placeholder="Paste image URL — e.g. https://example.com/image.jpg"
+                      value={imageUrl}
+                      onChange={e => setImageUrl(e.target.value)}
+                    />
+                    {imageUrl && imageUrl.startsWith('http') && (
+                      <div className={styles.imgPreview} style={{ marginTop:10 }}>
+                        <img
+                          src={imageUrl}
+                          alt="preview"
+                          onError={e => e.target.style.opacity=0.3}
+                        />
+                        <span style={{ fontSize:12, color:'var(--muted)', flex:1 }}>URL preview</span>
+                        <button onClick={() => setImageUrl('')} style={{ background:'none', border:'none', color:'var(--red)', cursor:'pointer' }}>
+                          <X size={14}/>
+                        </button>
+                      </div>
+                    )}
+                    <p style={{ fontSize:11, color:'var(--subtle)', marginTop:6 }}>
+                      💡 Find free images at unsplash.com, pexels.com or google images → right-click → Copy image address
+                    </p>
                   </div>
+                )}
+
+                {/* File upload tab */}
+                {imgTab === 'file' && (
+                  <div>
+                    <div className={styles.uploadZone} onClick={() => fileRef.current?.click()}>
+                      <input ref={fileRef} type="file" accept="image/*" hidden onChange={e => handleFile(e.target.files[0])}/>
+                      <Upload size={20} style={{ color:'var(--blue-mid)', marginBottom:6 }}/>
+                      <p style={{ fontSize:13, color:'var(--muted)' }}>
+                        {image ? image.name : 'Click to upload image'}
+                      </p>
+                      <p style={{ fontSize:11, color:'var(--subtle)' }}>JPG, PNG, WebP · Max 5 MB</p>
+                    </div>
+                    {image && (
+                      <div className={styles.imgPreview}>
+                        <img src={URL.createObjectURL(image)} alt="preview"/>
+                        <button onClick={() => setImage(null)} style={{ background:'none', border:'none', color:'var(--red)', cursor:'pointer' }}>
+                          <X size={14}/>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {editing && !image && !imageUrl && editing.image && (
+                  <p style={{ fontSize:11, color:'var(--subtle)', marginTop:6 }}>
+                    ✅ Current image will be kept if nothing selected
+                  </p>
                 )}
               </div>
             </div>

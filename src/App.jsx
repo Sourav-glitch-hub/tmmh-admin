@@ -1,14 +1,14 @@
 // src/App.jsx
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
-import Layout     from './components/Layout.jsx'
-import Login      from './pages/Login.jsx'
-import Dashboard  from './pages/Dashboard.jsx'
-import Repairs    from './pages/Repairs.jsx'
+import Layout      from './components/Layout.jsx'
+import Login       from './pages/Login.jsx'
+import Dashboard   from './pages/Dashboard.jsx'
+import Repairs     from './pages/Repairs.jsx'
 import RepairDetail from './pages/RepairDetail.jsx'
-import Products   from './pages/Products.jsx'
+import Products    from './pages/Products.jsx'
+import Profile     from './pages/Profile.jsx'
 
-// Protected route — redirects to /login if not authenticated
 function PrivateRoute({ children }) {
   const { isLoggedIn, loading } = useAuth()
   if (loading) return (
@@ -32,11 +32,12 @@ function AppRoutes() {
 
       {/* Protected admin routes */}
       <Route path="/" element={<PrivateRoute><Layout/></PrivateRoute>}>
-        <Route index            element={<Navigate to="/dashboard" replace/>}/>
-        <Route path="dashboard" element={<Dashboard/>}/>
-        <Route path="repairs"   element={<Repairs/>}/>
+        <Route index              element={<Navigate to="/dashboard" replace/>}/>
+        <Route path="dashboard"   element={<Dashboard/>}/>
+        <Route path="repairs"     element={<Repairs/>}/>
         <Route path="repairs/:id" element={<RepairDetail/>}/>
-        <Route path="products"  element={<Products/>}/>
+        <Route path="products"    element={<Products/>}/>
+        <Route path="profile"     element={<Profile/>}/>
       </Route>
 
       {/* Fallback */}

@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import { Menu, Bell } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import styles from './Header.module.css'
@@ -8,6 +8,7 @@ const PAGE_TITLES = {
   '/dashboard': 'Dashboard',
   '/repairs':   'Repair Requests',
   '/products':  'Products',
+  '/profile':   'My Profile',
 }
 
 export default function Header({ onMenuClick }) {

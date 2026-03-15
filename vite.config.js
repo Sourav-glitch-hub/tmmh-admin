@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://tmmh-backend.onrender.com',
         changeOrigin: true,
       },
     },

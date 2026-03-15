@@ -2,15 +2,16 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Wrench, Package,
-  LogOut, Smartphone, X
+  LogOut, Smartphone, X, UserCog
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import styles from './Sidebar.module.css'
 
 const LINKS = [
-  { to: '/dashboard',   icon: <LayoutDashboard size={18}/>, label: 'Dashboard'   },
-  { to: '/repairs',     icon: <Wrench          size={18}/>, label: 'Repairs'     },
-  { to: '/products',    icon: <Package         size={18}/>, label: 'Products'    },
+  { to: '/dashboard', icon: <LayoutDashboard size={18}/>, label: 'Dashboard' },
+  { to: '/repairs',   icon: <Wrench          size={18}/>, label: 'Repairs'   },
+  { to: '/products',  icon: <Package         size={18}/>, label: 'Products'  },
+  { to: '/profile',   icon: <UserCog         size={18}/>, label: 'Profile'   },
 ]
 
 export default function Sidebar({ open, onClose }) {
@@ -24,7 +25,6 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <>
-      {/* Mobile overlay */}
       {open && <div className={styles.overlay} onClick={onClose}/>}
 
       <aside className={`${styles.sidebar} ${open ? styles.open : ''}`}>

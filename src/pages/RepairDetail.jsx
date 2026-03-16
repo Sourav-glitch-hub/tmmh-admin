@@ -175,7 +175,7 @@ export default function RepairDetail() {
             </div>
             {repair.image ? (
               <img
-                src={`http://localhost:5000${repair.image}`}
+                src={repair.image?.startsWith("http") ? repair.image : `${import.meta.env.VITE_API_URL || "http://localhost:5000"}${repair.image}`}
                 alt="Device damage"
                 className={styles.deviceImg}
                 onClick={() => setLightbox(true)}
@@ -196,7 +196,7 @@ export default function RepairDetail() {
             <div className={styles.lightbox} onClick={() => setLightbox(false)}>
               <button className={styles.lightboxClose} onClick={() => setLightbox(false)}>✕</button>
               <img
-                src={`http://localhost:5000${repair.image}`}
+                src={repair.image?.startsWith("http") ? repair.image : `${import.meta.env.VITE_API_URL || "http://localhost:5000"}${repair.image}`}
                 alt="Device damage full size"
                 className={styles.lightboxImg}
                 onClick={e => e.stopPropagation()}
